@@ -1,0 +1,67 @@
+{
+    "message": "This is an example JSON file.",
+    "success": true,
+    "status": 200,
+    "payload": [
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        },
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        },
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        }
+    ]
+}
