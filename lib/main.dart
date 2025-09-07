@@ -4,23 +4,101 @@ import 'package:flutter/material.dart';
 import 'package:flutter_basics/animatscreen.dart';
 import 'package:flutter_basics/controller/bloc_observ.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
+import 'package:flutter_basics/page1.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
+import 'models/example_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Bloc.observer = BlocObserv();
-  ProductCubit().increment();
-  final cubit = CubitController();
-  log(cubit.state.toString());
-  cubit.increment();
-  cubit.increment();
-  cubit.increment();
-  log(cubit.state.toString());
-  cubit.decrement();
-  log(cubit.state.toString());
+  // Bloc.observer = BlocObserv();
+  // ProductCubit().increment();
+  // final cubit = CubitController();
+  // log(cubit.state.toString());
+  // cubit.increment();
+  // cubit.increment();
+  // cubit.increment();
+  // log(cubit.state.toString());
+  // cubit.decrement();
+  // log(cubit.state.toString());
+  final jsonData ={
+    "message": "This is an example JSON file.",
+    "success": true,
+    "status": 200,
+    "payload": [
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        },
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        },
+        {
+            "name": "Product Name",
+            "price": 19.99,
+            "inStock": true,
+            "tags": [
+                "example",
+                "json",
+                "data"
+            ],
+            "dimensions": {
+                "width": 10,
+                "height": 20,
+                "depth": 5
+            },
+            "warehouseLocation": {
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            "description": "This is an example JSON file."
+        }
+    ]
+};
+  ExampleModel exampleModel = ExampleModel();
+  exampleModel= ExampleModel.fromJson(jsonData);
+  log(exampleModel.message??'');
+  log(exampleModel.product![0].price.toString() );
+  log(exampleModel.product![1].price.toString() );
+  log(exampleModel.product![2].price.toString() );
+
+  
+
   //final productBloc = ProductBloc();
   // log('Product Bloc state: ${productBloc.state}');
   // productBloc.add(ProductPriceIncrement());
@@ -79,6 +157,8 @@ void main() async {
       ),
       BlocProvider<CounterCubit>(
         create: (context) => CounterCubit(),
+      ),BlocProvider<ProductCubit>(
+        create: (context) => ProductCubit(),
       ),
       // BlocProvider<ProductCubit>(
       //   create: (context) => ProductCubit(),
@@ -129,7 +209,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: Animatscreen(),
+      home: Page1(
+        title: '',
+      ),
 
       // initialRoute: '/page2',///
 

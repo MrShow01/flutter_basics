@@ -8,7 +8,7 @@ import 'package:sqflite/sqflite.dart';
 
 class ProductCubit extends Cubit<int> {
   ProductCubit() : super(0);
-
+ Example example =Example();
   void increment() => emit(state + 1);
   void decrement() => emit(state - 1);
   void reset() => emit(0);
@@ -17,12 +17,12 @@ class ProductCubit extends Cubit<int> {
     emit(value);
   }
 
-  openDb() async {
+   openDb() async {
     Database database = await openDatabase('my_db.db', version: 1,
         onCreate: (Database db, int version) async {
       // When creating the db, create the table
       await db.execute(
-          'CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
+          'CREATE TABLE Test (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, value INTEGER, num REAL)');
       await db.execute(
           'CREATE TABLE Product (id INTEGER PRIMARY KEY, name TEXT, price REAL, inStock INTEGER)');
     });
@@ -40,6 +40,8 @@ class ProductCubit extends Cubit<int> {
     batch.insert('Test', {'name': 'batch name 1', 'value': 111, 'num': 1.1});
     batch.insert('Test', {'name': 'batch name 2', 'value': 222, 'num': 2.2});
     batch.insert('Test', {'name': 'batch name 3', 'value': 333, 'num': 3.3});
+  //  batch.update('Test', {'name': 'batch name 3', 'value': 200, 'num': 3.3});
+    batch.delete('Test', where: 'value > 300');
     await batch.commit();
     batch.insert('Product', {'name': 'Product 1', 'price': 9.99, 'inStock': 1});
     batch
@@ -51,8 +53,10 @@ class ProductCubit extends Cubit<int> {
         await database.rawQuery('SELECT * FROM Test WHERE value < 300');
     var resultProduct = await database.rawQuery('SELECT * FROM Product');
     log(result.toString());
-    log(resultProduct.toString());
-    log(resultProduct[0].toString());
+      example = Example.fromJson(result[0]);
+      emit(0);
+    // log(resultProduct.toString());
+    // log(resultProduct[0].toString());
   }
 
   Future<void> getData() async {
@@ -82,8 +86,9 @@ class ProductCubit extends Cubit<int> {
 
     Database database = await openDatabase('my_dbre.db');
     //var result = await database.rawQuery('SELECT * FROM Test WHERE id = 1');
-    var result = await database.query('Test', where: 'id = ?', whereArgs: [1]);
-    Example example = Example.fromJson(result[0]);
+    var result = await database.query('Test');
+   
+   
     // return example;
     // log(result.toString());
   }

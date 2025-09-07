@@ -12,7 +12,7 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> {
-  Example example = Example();
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,15 +144,15 @@ class _Page1State extends State<Page1> {
                 },
                 child: Text('Init Database')),
             Text(
-              example.name.toString(),
+              context.watch<ProductCubit>().example.name.toString(),
               style: TextStyle(fontSize: 24),
             ),
             Text(
-              example.value.toString(),
+              context.watch<ProductCubit>().example.value.toString(),
               style: TextStyle(fontSize: 24),
             ),
             Text(
-              example.num.toString(),
+              context.watch<ProductCubit>().example.num.toString(),
               style: TextStyle(fontSize: 24),
             ),
           ],
