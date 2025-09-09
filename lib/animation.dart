@@ -18,7 +18,7 @@ class _AnimationScreenState extends State<AnimationScreen>
   int _itemCount = 3;
 
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 2),
+    duration: const Duration(seconds: 1),
     vsync: this,
   )..repeat();
 
@@ -57,6 +57,33 @@ class _AnimationScreenState extends State<AnimationScreen>
             ),
           ),
           SizedBox(height: 50),
+          RotationTransition(
+              turns: animation,
+              child: Icon(
+                Icons.refresh,
+                size: 150,
+                color: Colors.blue,
+              )),
+          TweenAnimationBuilder(
+              tween: ColorTween(begin: Colors.green, end: Colors.amber),
+              curve: Curves.bounceIn,
+              duration: Duration(seconds: 5),
+              builder: (context, colorValue, child) {
+                return TweenAnimationBuilder(
+                    tween: Tween<double>(begin: 0, end: 200),
+                    curve: Curves.bounceIn,
+                    duration: Duration(seconds: 3),
+                    builder: (context, value, child) {
+                      return Container(
+                        width: value,
+                        height: value,
+                        decoration: BoxDecoration(
+                            color: colorValue,
+                            borderRadius: BorderRadius.circular(value)),
+                      );
+                    });
+              }),
+
           // GestureDetector(
           //   onTap: () => setState(() {
           //     _showFirst = !_showFirst;
@@ -116,29 +143,29 @@ class _AnimationScreenState extends State<AnimationScreen>
           //         crossAxisCount: 3, mainAxisSpacing: 10, crossAxisSpacing: 10),
           //   ),
           // ),
-          SizedBox(height: 50),
-          RotationTransition(
-              turns: animation,
-              child: Icon(
-                Icons.refresh,
-                size: 50,
-                color: Colors.blue,
-              )),
-          SizedBox(height: 50),
-          TweenAnimationBuilder(
-            tween: Tween<double>(begin: 0, end: 100),
-            duration: Duration(seconds: 3),
-            builder: (context, value, child) {
-              return Container(
-                width: 200,
-                height: value,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  //  borderRadius: BorderRadius.circular(value),
-                ),
-              );
-            },
-          ),
+          // SizedBox(height: 50),
+          // RotationTransition(
+          //     turns: animation,
+          //     child: Icon(
+          //       Icons.refresh,
+          //       size: 50,
+          //       color: Colors.blue,
+          //     )),
+          // SizedBox(height: 50),
+          // TweenAnimationBuilder(
+          //   tween: Tween<double>(begin: 0, end: 100),
+          //   duration: Duration(seconds: 3),
+          //   builder: (context, value, child) {
+          //     return Container(
+          //       width: 200,
+          //       height: value,
+          //       decoration: BoxDecoration(
+          //         color: Colors.green,
+          //         //  borderRadius: BorderRadius.circular(value),
+          //       ),
+          //     );
+          //   },
+          // ),
         ],
       ),
     ));
