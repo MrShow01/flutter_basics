@@ -1,14 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ProductCubit extends Cubit<int> {
   ProductCubit() : super(0);
- Example example =Example();
+  Example example = Example();
   void increment() => emit(state + 1);
   void decrement() => emit(state - 1);
   void reset() => emit(0);
@@ -17,7 +15,7 @@ class ProductCubit extends Cubit<int> {
     emit(value);
   }
 
-   openDb() async {
+  openDb() async {
     Database database = await openDatabase('my_db.db', version: 1,
         onCreate: (Database db, int version) async {
       // When creating the db, create the table
@@ -40,7 +38,7 @@ class ProductCubit extends Cubit<int> {
     batch.insert('Test', {'name': 'batch name 1', 'value': 111, 'num': 1.1});
     batch.insert('Test', {'name': 'batch name 2', 'value': 222, 'num': 2.2});
     batch.insert('Test', {'name': 'batch name 3', 'value': 333, 'num': 3.3});
-  //  batch.update('Test', {'name': 'batch name 3', 'value': 200, 'num': 3.3});
+    //  batch.update('Test', {'name': 'batch name 3', 'value': 200, 'num': 3.3});
     batch.delete('Test', where: 'value > 300');
     await batch.commit();
     batch.insert('Product', {'name': 'Product 1', 'price': 9.99, 'inStock': 1});
@@ -53,42 +51,63 @@ class ProductCubit extends Cubit<int> {
         await database.rawQuery('SELECT * FROM Test WHERE value < 300');
     var resultProduct = await database.rawQuery('SELECT * FROM Product');
     log(result.toString());
-      example = Example.fromJson(result[0]);
-      emit(0);
+    example = Example.fromJson(result[0]);
+    emit(0);
     // log(resultProduct.toString());
     // log(resultProduct[0].toString());
   }
 
   Future<void> getData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.setString('Token', 'Tokrnjkdsfkdcfdhjjgfkd2sfd1v2scs2v2f');
-    await prefs.setStringList('Role', ['Admin', 'User']);
-    log('Token saved');
+    // prefs.setDouble('Price', 19.25);
+    // double price = prefs.getDouble('Price') ?? 0;
+    // prefs.setString('Name', 'Khaled');
+    // String name = prefs.getString('Name') ?? '';
+    // log(name.toString());
+    // log(price.toString());
+    // await prefs.setString('Token', 'Tokrnjkdsfkdcfdhjjgfkd2sfd1v2scs2v2f');
+    // await prefs.setString('Token', 'gdfdsfdsdf');
+    // await prefs.setStringList('Role', ['Admin', 'User']);
+    // String token = prefs.getString('Token') ?? '';
+    // List<String> role = prefs.getStringList('Role') ?? [];
+    // log(token.toString());
+    // log(role.toString());
+    await Hive.openBox("boxname");
 
-    String? token;
-    List<String>? role;
-    log(token.toString());
+    final box = Hive.box('myBox');
 
-    token = prefs.getString('Token');
-    role = prefs.getStringList('Role');
+    box.put('name', 'David');
+    box.put('num', Example(id: 1, name: 'Khaled', value: 1, num: 1.1));
+    box.put('list', ['A', 'B', 'C']);
+    String name = box.get('name', defaultValue: 'No Name');
+    double num = box.get('num', defaultValue: 0.0);
+    List<String> list = box.get('list', defaultValue: []);
+    log(name.toString());
+    log(num.toString());
+    log(list.toString());
+    // String? token;
+    // List<String>? role;
+    // log(token.toString());
 
-    log(token.toString());
-    log(role.toString());
-    final storage = FlutterSecureStorage();
-    storage.write(key: 'person', value: 'Khaled');
-    String? person = await storage.read(key: 'person');
-    log(person.toString());
+    // token = prefs.getString('Token');
+    // role = prefs.getStringList('Role');
+
+    // log(token.toString());
+    // log(role.toString());
+    // final storage = FlutterSecureStorage();
+    // storage.write(key: 'person', value: 'Khaled');
+    // String? person = await storage.read(key: 'person');
+    // log(person.toString());
     // final box = await Hive.openBox('myBox');
     // await box.put(
     //     'name', Person(name: 'Khaled', age: 96, friends: ['A', 'B', 'C']));
     // Person person = await box.get('name');
 
-    Database database = await openDatabase('my_dbre.db');
+    // Database database = await openDatabase('my_dbre.db');
     //var result = await database.rawQuery('SELECT * FROM Test WHERE id = 1');
-    var result = await database.query('Test');
-   
-   
+    // var result = await database.query('Test');
+
     // return example;
     // log(result.toString());
   }

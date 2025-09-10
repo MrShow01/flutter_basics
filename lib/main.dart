@@ -3,14 +3,19 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'animation.dart';
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
 import 'models/example_model.dart';
+import 'page1.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final appDocumentDirectory = await getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDirectory.path);
   // Bloc.observer = BlocObserv();
   // ProductCubit().increment();
   // final cubit = CubitController();
@@ -173,7 +178,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: AnimationScreen(),
+      home: Page1(),
 
       // initialRoute: '/page2',///
 

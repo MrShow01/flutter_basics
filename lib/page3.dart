@@ -26,9 +26,7 @@ class Page3 extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => Page1(
-                        title: 'from page 3',
-                      ),
+                      builder: (context) => Page1(),
                     ),
                   );
                 },

@@ -18,9 +18,7 @@ class _Page2State extends State<Page2> {
   int currentIndex = 0;
 
   List<Widget> screens = [
-    Page1(
-      title: 'Page 1',
-    ),
+    Page1(),
     Page3(),
     Page4(),
   ];

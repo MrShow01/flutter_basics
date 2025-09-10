@@ -18,16 +18,12 @@ class _AnimationScreenState extends State<AnimationScreen>
   int _itemCount = 3;
 
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 1),
+    duration: const Duration(seconds: 2),
     vsync: this,
   )..repeat();
 
   @override
   Widget build(BuildContext context) {
-    Animation<double> animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.linear,
-    );
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(
@@ -58,29 +54,36 @@ class _AnimationScreenState extends State<AnimationScreen>
           ),
           SizedBox(height: 50),
           RotationTransition(
-              turns: animation,
+              turns: CurvedAnimation(
+                parent: _controller,
+                curve: Curves.bounceIn,
+              ),
               child: Icon(
                 Icons.refresh,
                 size: 150,
                 color: Colors.blue,
               )),
           TweenAnimationBuilder(
-              tween: ColorTween(begin: Colors.green, end: Colors.amber),
-              curve: Curves.bounceIn,
+              tween: DecorationTween(
+                  begin: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  end: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  )) // ColorTween(begin: Colors.green, end: Colors.amber),
+              ,
+              curve: Curves.linear,
               duration: Duration(seconds: 5),
-              builder: (context, colorValue, child) {
+              builder: (context, decorValue, child) {
                 return TweenAnimationBuilder(
                     tween: Tween<double>(begin: 0, end: 200),
                     curve: Curves.bounceIn,
-                    duration: Duration(seconds: 3),
+                    duration: Duration(seconds: 0),
                     builder: (context, value, child) {
                       return Container(
-                        width: value,
-                        height: value,
-                        decoration: BoxDecoration(
-                            color: colorValue,
-                            borderRadius: BorderRadius.circular(value)),
-                      );
+                          width: value, height: value, decoration: decorValue);
                     });
               }),
 

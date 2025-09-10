@@ -3,22 +3,21 @@ import 'package:flutter_basics/controller/product_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Page1 extends StatefulWidget {
-  final title;
   static const String routeName = '/';
-  Page1({super.key, required this.title});
+  Page1({
+    super.key,
+  });
 
   @override
   State<Page1> createState() => _Page1State();
 }
 
 class _Page1State extends State<Page1> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(''),
       ),
       // drawer: Container(
       //   child: Text('Drawer is not implemented yet!'),
