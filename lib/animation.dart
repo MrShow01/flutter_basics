@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AnimationScreen extends StatefulWidget {
-  AnimationScreen({super.key});
+  const AnimationScreen({super.key});
 
   @override
   State<AnimationScreen> createState() => _AnimationScreenState();
@@ -13,9 +13,9 @@ class _AnimationScreenState extends State<AnimationScreen>
   double _height = 200;
   Color _color = Colors.red;
   double _size = 0;
-  double _opacity = 1;
-  bool _showFirst = true;
-  int _itemCount = 3;
+  final double _opacity = 1;
+  final bool _showFirst = true;
+  final int _itemCount = 3;
 
   late final AnimationController _controller = AnimationController(
     duration: const Duration(seconds: 2),

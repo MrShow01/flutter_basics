@@ -402,7 +402,7 @@ class _StateFullExampleState extends State<StateFullExample> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Row(
                   spacing: 10,

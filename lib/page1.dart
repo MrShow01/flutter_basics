@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Page1 extends StatefulWidget {
   static const String routeName = '/';
-  Page1({
+  const Page1({
     super.key,
   });
 

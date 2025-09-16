@@ -8,7 +8,7 @@ import 'page3.dart';
 
 class Page2 extends StatefulWidget {
   static const String routeName = '/page2';
-  Page2({super.key});
+  const Page2({super.key});
 
   @override
   State<Page2> createState() => _Page2State();

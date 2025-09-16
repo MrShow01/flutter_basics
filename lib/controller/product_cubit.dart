@@ -78,7 +78,7 @@ class ProductCubit extends Cubit<int> {
     final box = Hive.box('myBox');
 
     box.put('name', 'David');
-    box.put('num', Example(id: 1, name: 'Khaled', value: 1, num: 1.1));
+    // box.put('num', Example(id: 1, name: 'Khaled', value: 1, num: 1.1));
     box.put('list', ['A', 'B', 'C']);
     String name = box.get('name', defaultValue: 'No Name');
     double num = box.get('num', defaultValue: 0.0);
@@ -150,11 +150,11 @@ class Example extends HiveObject {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['value'] = this.value;
-    data['num'] = this.num;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['value'] = value;
+    data['num'] = num;
     return data;
   }
 }

@@ -36,7 +36,7 @@ class Sessions24 extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 35, vertical: 8),
                     child: Column(
                       children: [
-                        Text('this is a card index ${index}'),
+                        Text('this is a card index $index'),
                         Text('this is a card'),
                       ],
                     ),

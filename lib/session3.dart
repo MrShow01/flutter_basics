@@ -299,14 +299,14 @@ class Session3 extends StatelessWidget {
                   onPressed: () {
                     log('Button Clicked!');
                   },
-                  child: Text(
-                    'Click Me',
-                    style: TextStyle(color: Colors.white),
-                  ),
                   style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(primaryColor),
                       textStyle: WidgetStatePropertyAll(
                           TextStyle(color: Colors.white))),
+                  child: Text(
+                    'Click Me',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Image.asset(
                   'assets/icon.png',
