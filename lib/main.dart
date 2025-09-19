@@ -1,20 +1,24 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
+import 'package:flutter_basics/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
+import 'models/comment.dart';
 import 'models/example_model.dart';
-import 'page1.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  getData();
   await Firebase.initializeApp();
 
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
@@ -96,18 +100,14 @@ void main() async {
 
   // log(jsonEncode(data));
   // log(jsonDecode(jsonEncode(data)).toString());
-
-//  log(model.name.toString());
+  //log(model.name.toString());
   // log(model.toJson().toString());
   // sqfliteFfiInit();
-
   // databaseFactory = databaseFactoryFfi;
-
   // Stream<int> stream = countStream();
   // stream.listen((value) {
   //   log('Received: $value');
   // });
-
   // try {
   //   dynamic num = 5.5;
   //   int result = num;
@@ -148,6 +148,34 @@ void main() async {
   );
 }
 
+getData() async {
+  List<Comment> dataList = [];
+  final Dio dio = Dio();
+
+  final response = await dio.get('https://jsonplaceholder.typicode.com/posts');
+  for (var item in response.data) {
+    dataList.add(Comment.fromJson(item));
+  }
+  log(dataList.length.toString());
+  log(dataList[0].title.toString());
+  log(dataList[0].userId.toString());
+  log(dataList[0].body.toString());
+
+  final response2 =
+      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+  for (var item in jsonDecode(response2.body)) {
+    dataList.add(Comment.fromJson(item));
+  }
+  log(dataList.length.toString());
+  log(dataList[1].title.toString());
+  log(dataList[1].userId.toString());
+  log(dataList[1].body.toString());
+
+  // log(response.headers.toString());
+  // log(response.body.toString());
+  // log(response.statusCode.toString());
+}
+
 Stream<int> countStream() async* {
   for (int i = 1; i <= 50; i++) {
     await Future.delayed(Duration(seconds: 1));
@@ -181,7 +209,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: Page1(),
+      home: FirebaseAuthScreen(),
 
       // initialRoute: '/page2',///
 

@@ -52,21 +52,26 @@ class PostController extends ChangeNotifier {
     //   //   },
     //   // ),
     // );
-
+    final response =
+        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+    log(response.headers.toString());
+    log(response.body.toString());
+    log(response.statusCode.toString());
     // final response =
     //     await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
     // log(response.body.toString());
     // log(response.statusCode.toString());
 
-    final response =
-        await dio.get('https://jsonplaceholder.typicode.com/posts');
-    if (response.statusCode == 200) {
-      for (var item in response.data as List) {
-        Comment data = Comment.fromJson((item));
-        dataList.add(data);
-      }
-      log(dataList.length.toString());
-    }
+    // final response =
+    //     await dio.get('https://jsonplaceholder.typicode.com/posts');
+    // if (response.statusCode == 200) {
+    //   for (var item in response.data as List) {
+    //     Comment data = Comment.fromJson((item));
+    //     dataList.add(data);
+    //   }
+    //   log(dataList.length.toString());
+    // }
+
     notifyListeners();
   }
 
