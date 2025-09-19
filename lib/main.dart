@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
-import 'package:flutter_basics/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
+import 'firebase_login.dart';
 import 'models/comment.dart';
 import 'models/example_model.dart';
 
@@ -93,11 +93,8 @@ void main() async {
   // bloc.add(CounterDecrement());
   // log('Bloc state after decrement: ${bloc.state}');
   // await Future.delayed(const Duration(milliseconds: 300));
-
   // log('Bloc state after second decrement: ${bloc.state}');
-
   //ExampleModel model = ExampleModel.fromJson(data);
-
   // log(jsonEncode(data));
   // log(jsonDecode(jsonEncode(data)).toString());
   //log(model.name.toString());
@@ -209,7 +206,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: FirebaseAuthScreen(),
+      home: FirebaseLogin(),
 
       // initialRoute: '/page2',///
 
