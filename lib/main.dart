@@ -2,27 +2,23 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
+import 'animatscreen.dart';
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
-import 'firebase_login.dart';
 import 'models/comment.dart';
-import 'models/example_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  getData();
-  await Firebase.initializeApp();
+  // getData();
+  // await Firebase.initializeApp();
 
-  final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  Hive.init(appDocumentDirectory.path);
+  // final appDocumentDirectory = await getApplicationDocumentsDirectory();
+  // Hive.init(appDocumentDirectory.path);
   // Bloc.observer = BlocObserv();
   // ProductCubit().increment();
   // final cubit = CubitController();
@@ -33,46 +29,46 @@ void main() async {
   // log(cubit.state.toString());
   // cubit.decrement();
   // log(cubit.state.toString());
-  final jsonData = {
-    "message": "This is an example JSON file.",
-    "success": true,
-    "status": 200,
-    "payload": [
-      {
-        "name": "Product Name",
-        "price": 19.99,
-        "inStock": true,
-        "tags": ["example", "json", "data"],
-        "dimensions": {"width": 10, "height": 20, "depth": 5},
-        "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
-        "description": "This is an example JSON file."
-      },
-      {
-        "name": "Product Name",
-        "price": 19.99,
-        "inStock": true,
-        "tags": ["example", "json", "data"],
-        "dimensions": {"width": 10, "height": 20, "depth": 5},
-        "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
-        "description": "This is an example JSON file."
-      },
-      {
-        "name": "Product Name",
-        "price": 19.99,
-        "inStock": true,
-        "tags": ["example", "json", "data"],
-        "dimensions": {"width": 10, "height": 20, "depth": 5},
-        "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
-        "description": "This is an example JSON file."
-      }
-    ]
-  };
-  ExampleModel exampleModel = ExampleModel();
-  exampleModel = ExampleModel.fromJson(jsonData);
-  log(exampleModel.message ?? '');
-  log(exampleModel.product![0].price.toString());
-  log(exampleModel.product![1].price.toString());
-  log(exampleModel.product![2].price.toString());
+  // final jsonData = {
+  //   "message": "This is an example JSON file.",
+  //   "success": true,
+  //   "status": 200,
+  //   "payload": [
+  //     {
+  //       "name": "Product Name",
+  //       "price": 19.99,
+  //       "inStock": true,
+  //       "tags": ["example", "json", "data"],
+  //       "dimensions": {"width": 10, "height": 20, "depth": 5},
+  //       "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
+  //       "description": "This is an example JSON file."
+  //     },
+  //     {
+  //       "name": "Product Name",
+  //       "price": 19.99,
+  //       "inStock": true,
+  //       "tags": ["example", "json", "data"],
+  //       "dimensions": {"width": 10, "height": 20, "depth": 5},
+  //       "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
+  //       "description": "This is an example JSON file."
+  //     },
+  //     {
+  //       "name": "Product Name",
+  //       "price": 19.99,
+  //       "inStock": true,
+  //       "tags": ["example", "json", "data"],
+  //       "dimensions": {"width": 10, "height": 20, "depth": 5},
+  //       "warehouseLocation": {"latitude": 37.7749, "longitude": -122.4194},
+  //       "description": "This is an example JSON file."
+  //     }
+  //   ]
+  // };
+  // ExampleModel exampleModel = ExampleModel();
+  // exampleModel = ExampleModel.fromJson(jsonData);
+  // log(exampleModel.message ?? '');
+  // log(exampleModel.product![0].price.toString());
+  // log(exampleModel.product![1].price.toString());
+  // log(exampleModel.product![2].price.toString());
 
   //final productBloc = ProductBloc();
   // log('Product Bloc state: ${productBloc.state}');
@@ -206,7 +202,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: FirebaseLogin(),
+      home: Animatscreen(),
 
       // initialRoute: '/page2',///
 
