@@ -1,7 +1,10 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'models/user_model.dart';
 
 class FirebaseAuthScreen extends StatefulWidget {
   const FirebaseAuthScreen({super.key});
@@ -225,9 +228,28 @@ class _FirebaseRegisterState extends State<FirebaseRegister> {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final UserCredential? userCredential;
-  const ProfileScreen({super.key, required this.userCredential});
+  ProfileScreen({super.key, required this.userCredential});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final TextEditingController nameController = TextEditingController();
+
+  final TextEditingController ageController = TextEditingController();
+
+  final TextEditingController emailController = TextEditingController();
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  final Stream<QuerySnapshot> usersStream =
+      FirebaseFirestore.instance.collection('users').snapshots();
+  List<UserModel> userList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -236,26 +258,184 @@ class ProfileScreen extends StatelessWidget {
         title: Text('Profile Screen'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Welcome, ${userCredential?.user?.email ?? 'User'}!'),
-            Text(
-                'displayName: ${userCredential?.user?.displayName ?? 'User'}!'),
-            Text(
-                'emailVerified: ${userCredential?.user?.emailVerified ?? 'User'}!'),
-            Text('uid: ${userCredential?.user?.uid ?? 'User'}!'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
-              },
-              child: Text('Logout'),
-            ),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: ListView(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                ),
+                controller: nameController,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Age',
+                ),
+                controller: ageController,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+                controller: emailController,
+              ),
+              SizedBox(height: 20),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                runSpacing: 10,
+                spacing: 16,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      addUser();
+                    },
+                    child: Text('Add'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      editUser();
+                    },
+                    child: Text('Update'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      //  addUser();
+                      getUserData();
+                    },
+                    child: Text('Get all'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                'User List',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: userList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                        '${userList[index].name} ID: ${userList[index].id}'),
+                    trailing: IconButton(
+                        onPressed: () {
+                          deleteUser(userList[index].id ?? '');
+                        },
+                        icon: Icon(Icons.delete)),
+                    subtitle: Text(
+                        'Age: ${userList[index].age}, Email: ${userList[index].email}, Featured: ${userList[index].isFeatured}'),
+                  );
+                },
+              ),
+              Text(
+                'User Stream List',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 600,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: usersStream,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Loading");
+                    }
+
+                    return ListView(
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
+                        return ListTile(
+                          title: Text('${data['name']} ID: ${document.id}'),
+                          trailing: IconButton(
+                              onPressed: () {
+                                deleteUser(document.id);
+                              },
+                              icon: Icon(Icons.delete)),
+                          subtitle: Text(
+                              'Age: ${data['age']}, Email: ${data['email']}, Featured: ${data['isFeatured']}'),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+
+              // Text('Welcome,'),
+              // Text(
+              //     'displayName: ${widget.userCredential?.user?.displayName ?? 'User'}!'),
+              // Text(
+              //     'emailVerified: ${widget.userCredential?.user?.emailVerified ?? 'User'}!'),
+              // Text('uid: ${widget.userCredential?.user?.uid ?? 'User'}!'),
+              // SizedBox(height: 20),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     await FirebaseAuth.instance.signOut();
+              //     Navigator.pop(context);
+              //   },
+              //   child: Text('Logout'),
+              // ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  getUserData() async {
+    final snapshot = await users.get();
+    userList.clear();
+    for (var doc in snapshot.docs) {
+      userList.add(UserModel(
+        id: doc.id,
+        name: doc['name'],
+        age: doc['age'],
+        isFeatured: doc['isFeatured'],
+        email: doc['email'],
+      ));
+    }
+    setState(() {});
+  }
+
+  Future<void> addUser() {
+    return users
+        .add({
+          'name': nameController.text,
+          'email': emailController.text,
+          'age': int.tryParse(ageController.text) ?? 0,
+          'isFeatured': ((int.tryParse(ageController.text) ?? 0) > 35)
+        })
+        .then((value) => log("User Added ${value.id}"))
+        .catchError((error) => log("Failed to add user: $error"));
+  }
+
+  Future<void> editUser() {
+    return users
+        .doc(widget.userCredential?.user?.uid)
+        .update({
+          'name': nameController.text,
+          // 'email': emailController.text,
+          // 'age': int.tryParse(ageController.text) ?? 0,
+          // 'isFeatured': ((int.tryParse(ageController.text) ?? 0) > 35)
+        })
+        .then((value) => log("User updated"))
+        .catchError((error) => log("Failed to update user: $error"));
+  }
+
+  Future<void> deleteUser(String docId) {
+    return users
+        .doc(docId)
+        .delete()
+        .then((value) => log("User Deleted"))
+        .catchError((error) => log("Failed to delete user: $error"));
   }
 }
