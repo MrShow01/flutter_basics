@@ -1,7 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'models/user_model.dart';
 
 class FirebaseLogin extends StatelessWidget {
   FirebaseLogin({super.key});
@@ -319,49 +324,182 @@ class FireBaseSignUp extends StatelessWidget {
   }
 }
 
-class ProfileAuthScreen extends StatelessWidget {
+class ProfileAuthScreen extends StatefulWidget {
   final UserCredential? userCredential;
-  const ProfileAuthScreen({super.key, required this.userCredential});
+  ProfileAuthScreen({super.key, required this.userCredential});
 
+  @override
+  State<ProfileAuthScreen> createState() => _ProfileAuthScreenState();
+}
+
+class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
+  // Create a CollectionReference called users that references the firestore collection
+  TextEditingController nameTextController = TextEditingController();
+
+  TextEditingController ageTextController = TextEditingController();
+
+  TextEditingController gradeTextController = TextEditingController();
+
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  List<Users> userList = [];
+  final Stream<QuerySnapshot> usersStream =
+      FirebaseFirestore.instance.collection('users').snapshots();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile Screen'),
       ),
-      body: Center(
-        child: Column(
-          spacing: 8,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Welcome, ${userCredential?.user?.email ?? 'User'}!'),
-            Text(
-                'displayName: ${userCredential?.user?.displayName ?? 'User'}!'),
-            Text(
-                'isAnonymous: ${userCredential?.user?.isAnonymous ?? 'User'}!'),
-            Text(
-                'refreshToken: ${userCredential?.user?.refreshToken ?? 'User'}!'),
-            Text(
-                'emailVerified: ${userCredential?.user?.emailVerified ?? 'User'}!'),
-            Text('uid: ${userCredential?.user?.uid ?? 'User'}!'),
-            Text(
-                'accessToken: ${userCredential?.credential?.accessToken ?? 'User'}!'),
-            Text(
-                'signInMethod: ${userCredential?.credential?.signInMethod ?? 'User'}!'),
-            Text('token: ${userCredential?.credential?.token ?? 'User'}!'),
-            Text(
-                'providerId: ${userCredential?.credential?.providerId ?? 'User'}!'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
-              },
-              child: Text('Logout'),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              spacing: 12,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: nameTextController,
+                  decoration: InputDecoration(
+                    hintText: 'Name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                TextFormField(
+                  controller: ageTextController,
+                  decoration: InputDecoration(
+                    hintText: 'Age',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                TextFormField(
+                  controller: gradeTextController,
+                  decoration: InputDecoration(
+                    hintText: 'Grade',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                        child: ElevatedButton(
+                      onPressed: () {
+                        addStudent();
+                      },
+                      child: Text('Add Student'),
+                    )),
+                    Expanded(
+                        child: ElevatedButton(
+                      onPressed: () {
+                        getUserData();
+                      },
+                      child: Text('Get All Students'),
+                    )),
+                  ],
+                ),
+                Text('Users',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                SizedBox(height: 10),
+                ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      titleTextStyle: TextStyle(
+                          color: userList[index].passed == true
+                              ? Colors.green
+                              : Colors.red),
+                      title: Text(
+                          '${userList[index].name} ID: ${userList[index].id}'),
+                      trailing: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.delete, color: Colors.red)),
+                      subtitle: Text('Age: ${userList[index].age}'),
+                    );
+                  },
+                  itemCount: userList.length,
+                  shrinkWrap: true,
+                ),
+                Text('Live Users',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                SizedBox(
+                  height: 500,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: usersStream,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Something went wrong');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Loading");
+                      }
+
+                      return ListView(
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                          Map<String, dynamic> data =
+                              document.data()! as Map<String, dynamic>;
+                          return ListTile(
+                            titleTextStyle: TextStyle(
+                                color: data['grade'] == true
+                                    ? Colors.green
+                                    : Colors.red),
+                            title: Text('${data['name']} ID: ${document.id}'),
+                            trailing: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.delete, color: Colors.red)),
+                            subtitle: Text('Age: ${data['age']}'),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  getUserData() async {
+    final snapshot = await users.get();
+
+    userList.clear();
+    for (var doc in snapshot.docs) {
+      userList.add(
+        Users(
+          id: doc.id,
+          name: doc['name'],
+          age: doc['age'],
+          passed: doc['grade'],
+        ),
+      );
+    }
+    setState(() {});
+  }
+
+  addStudent() {
+    users.add({
+      'name': nameTextController.text,
+      'age': int.tryParse(ageTextController.text) ?? 0,
+      'grade': (int.tryParse(gradeTextController.text) ?? 0) > 50,
+    }).then((value) => log('User Added'));
   }
 }
