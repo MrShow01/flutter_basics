@@ -5,12 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basics/controller/cubit_controller.dart';
+import 'package:flutter_basics/firebase_login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
 import 'controller/counter_cubit.dart';
 import 'controller/product_cubit.dart';
-import 'firebase_login.dart';
 import 'models/comment.dart';
 
 void main() async {
@@ -203,7 +203,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.red),
 
-      home: FirebaseLogin(),
+      home: ProfileAuthScreen(),
 
       // initialRoute: '/page2',///
 

@@ -35,11 +35,11 @@ class _FirebaseAuthScreenState extends State<FirebaseAuthScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('${userCredential.user?.email} Logged in successfully'),
       ));
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProfileScreen(userCredential: userCredential),
-          ));
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => ProfileScreen(userCredential: userCredential),
+      //     ));
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -229,8 +229,10 @@ class _FirebaseRegisterState extends State<FirebaseRegister> {
 }
 
 class ProfileScreen extends StatefulWidget {
-  final UserCredential? userCredential;
-  ProfileScreen({super.key, required this.userCredential});
+  // final UserCredential? userCredential;
+  ProfileScreen({
+    super.key,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -295,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      editUser();
+                      //    editUser();
                     },
                     child: Text('Update'),
                   ),
@@ -400,7 +402,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         name: doc['name'],
         age: doc['age'],
         isFeatured: doc['isFeatured'],
-        email: doc['email'],
+        //   email: doc['email'],
       ));
     }
     setState(() {});
@@ -418,18 +420,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .catchError((error) => log("Failed to add user: $error"));
   }
 
-  Future<void> editUser() {
-    return users
-        .doc(widget.userCredential?.user?.uid)
-        .update({
-          'name': nameController.text,
-          // 'email': emailController.text,
-          // 'age': int.tryParse(ageController.text) ?? 0,
-          // 'isFeatured': ((int.tryParse(ageController.text) ?? 0) > 35)
-        })
-        .then((value) => log("User updated"))
-        .catchError((error) => log("Failed to update user: $error"));
-  }
+  // Future<void> editUser() {
+  //   return users
+  //       .doc(widget.userCredential?.user?.uid)
+  //       .update({
+  //         'name': nameController.text,
+  //         // 'email': emailController.text,
+  //         // 'age': int.tryParse(ageController.text) ?? 0,
+  //         // 'isFeatured': ((int.tryParse(ageController.text) ?? 0) > 35)
+  //       })
+  //       .then((value) => log("User updated"))
+  //       .catchError((error) => log("Failed to update user: $error"));
+  // }
 
   Future<void> deleteUser(String docId) {
     return users

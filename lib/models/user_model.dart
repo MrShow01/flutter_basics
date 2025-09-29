@@ -22,14 +22,16 @@ class Users {
   String? name;
   int? age;
   bool? passed;
+  List<int>? grades;
 
-  Users({this.id, this.name, this.age, this.passed});
+  Users({this.id, this.name, this.age, this.passed, this.grades});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
     data['age'] = age;
     data['passed'] = passed;
+    data['grades'] = grades;
 
     return data;
   }

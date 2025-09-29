@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'models/user_model.dart';
+import 'notification_service.dart';
 
 class FirebaseLogin extends StatelessWidget {
   FirebaseLogin({super.key});
@@ -38,7 +39,7 @@ class FirebaseLogin extends StatelessWidget {
           context,
           MaterialPageRoute(
               builder: (context) => ProfileAuthScreen(
-                    userCredential: credential,
+                  //     userCredential: credential,
                   )));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -307,7 +308,7 @@ class FireBaseSignUp extends StatelessWidget {
           context,
           MaterialPageRoute(
               builder: (context) => ProfileAuthScreen(
-                    userCredential: credential,
+                  //    userCredential: credential,
                   )));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -325,8 +326,10 @@ class FireBaseSignUp extends StatelessWidget {
 }
 
 class ProfileAuthScreen extends StatefulWidget {
-  final UserCredential? userCredential;
-  ProfileAuthScreen({super.key, required this.userCredential});
+  //final UserCredential? userCredential;
+  ProfileAuthScreen({
+    super.key,
+  });
 
   @override
   State<ProfileAuthScreen> createState() => _ProfileAuthScreenState();
@@ -341,10 +344,25 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
   TextEditingController gradeTextController = TextEditingController();
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-
+  String uId = '';
+  List<int> grades = [];
   List<Users> userList = [];
-  final Stream<QuerySnapshot> usersStream =
-      FirebaseFirestore.instance.collection('users').snapshots();
+  NotificationService notificationService = NotificationService();
+
+  notificationInit() {
+    notificationService.initInfo().then((value) async {
+      String token = await NotificationService.getToken();
+      log(":::::::TOKEN:::::: $token");
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    notificationInit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -408,37 +426,48 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
                       },
                       child: Text('Get All Students'),
                     )),
+                    Expanded(
+                        child: ElevatedButton(
+                      onPressed: () {
+                        updateUser(uId);
+                      },
+                      child: Text('Update Student'),
+                    )),
                   ],
                 ),
-                Text('Users',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                SizedBox(height: 10),
-                ListView.builder(
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      titleTextStyle: TextStyle(
-                          color: userList[index].passed == true
-                              ? Colors.green
-                              : Colors.red),
-                      title: Text(
-                          '${userList[index].name} ID: ${userList[index].id}'),
-                      trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.delete, color: Colors.red)),
-                      subtitle: Text('Age: ${userList[index].age}'),
-                    );
-                  },
-                  itemCount: userList.length,
-                  shrinkWrap: true,
-                ),
+                // Text('Users',
+                //     style:
+                //         TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                // SizedBox(height: 10),
+                // ListView.builder(
+                //   itemBuilder: (context, index) {
+                //     return ListTile(
+                //       titleTextStyle: TextStyle(
+                //           color: userList[index].passed == true
+                //               ? Colors.green
+                //               : Colors.red),
+                //       title: Text(
+                //           '${userList[index].name} ID: ${userList[index].id}'),
+                //       trailing: IconButton(
+                //           onPressed: () {},
+                //           icon: Icon(Icons.delete, color: Colors.red)),
+                //       subtitle: Text('Age: ${userList[index].age}'),
+                //     );
+                //   },
+                //   itemCount: userList.length,
+                //   shrinkWrap: true,
+                // ),
+
                 Text('Live Users',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 SizedBox(
                   height: 500,
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: usersStream,
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .where('age', isGreaterThan: 25) // <- Corrected line
+                        .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.hasError) {
@@ -454,16 +483,38 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
                             .map((DocumentSnapshot document) {
                           Map<String, dynamic> data =
                               document.data()! as Map<String, dynamic>;
+
                           return ListTile(
                             titleTextStyle: TextStyle(
                                 color: data['grade'] == true
                                     ? Colors.green
                                     : Colors.red),
                             title: Text('${data['name']} ID: ${document.id}'),
-                            trailing: IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.delete, color: Colors.red)),
-                            subtitle: Text('Age: ${data['age']}'),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 8,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      deleteUser(document.id);
+                                    },
+                                    icon:
+                                        Icon(Icons.delete, color: Colors.red)),
+                                IconButton(
+                                    onPressed: () {
+                                      grades =
+                                          List<int>.from(data['grades'] ?? []);
+                                      nameTextController.text = data['name'];
+                                      ageTextController.text =
+                                          data['age'].toString();
+                                      uId = document.id;
+                                    },
+                                    icon:
+                                        Icon(Icons.edit, color: Colors.green)),
+                              ],
+                            ),
+                            subtitle: Text(
+                                'Age: ${data['age']} grades: ${data['grades'].toString()}'),
                           );
                         }).toList(),
                       );
@@ -489,10 +540,29 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
           name: doc['name'],
           age: doc['age'],
           passed: doc['grade'],
+          grades: doc['grades'],
         ),
       );
     }
     setState(() {});
+  }
+
+  deleteUser(String id) {
+    users.doc(id).delete();
+  }
+
+  updateUser(
+    String id,
+  ) {
+    grades.add(int.tryParse(gradeTextController.text) ?? 0);
+    users.doc(id).update(
+      {
+        'name': nameTextController.text,
+        'age': ageTextController.text,
+        'grade': (int.tryParse(gradeTextController.text) ?? 0) > 50,
+        'grades': grades, // Example grades list
+      },
+    ).then((value) => log('User Updated'));
   }
 
   addStudent() {
@@ -500,6 +570,11 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
       'name': nameTextController.text,
       'age': int.tryParse(ageTextController.text) ?? 0,
       'grade': (int.tryParse(gradeTextController.text) ?? 0) > 50,
+      'grades': [int.tryParse(gradeTextController.text) ?? 0],
+      'isFeatured': (int.tryParse(gradeTextController.text) ?? 0) > 50,
+      'lastName': ' Doe',
+      'email': 'AxXHt@example.com',
+      'phone': '123-456-7890',
     }).then((value) => log('User Added'));
   }
 }
