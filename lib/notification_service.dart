@@ -6,7 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<void> firebaseMessageBackgroundHandle(RemoteMessage message) async {
-  log("BackGround Message :: ${message.messageId}");
+  log("BackGround Message :: ${message.from}");
 }
 
 class NotificationService {
@@ -41,6 +41,7 @@ class NotificationService {
               iOS: iosInitializationSettings);
       await flutterLocalNotificationsPlugin.initialize(initializationSettings,
           onDidReceiveNotificationResponse: (payload) {
+        log(payload.toString());
         log("::::::::onDidReceiveNotificationResponse:::::::::::");
       });
       setupInteractedMessage();

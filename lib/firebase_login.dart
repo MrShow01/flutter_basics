@@ -347,9 +347,10 @@ class _ProfileAuthScreenState extends State<ProfileAuthScreen> {
   String uId = '';
   List<int> grades = [];
   List<Users> userList = [];
-  NotificationService notificationService = NotificationService();
 
   notificationInit() {
+    NotificationService notificationService = NotificationService();
+
     notificationService.initInfo().then((value) async {
       String token = await NotificationService.getToken();
       log(":::::::TOKEN:::::: $token");
