@@ -57,6 +57,21 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
               },
               child: Text("Login"),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account?"),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FirebaseRegisterScreen()));
+                  },
+                  child: Text("Register"),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -78,6 +93,118 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Wrong password provided for that user.')));
+      }
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message.toString())));
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+}
+
+class FirebaseRegisterScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
+  FirebaseRegisterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Firebase Register Screen"),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 16,
+          children: [
+            Center(
+              child: Text("Firebase Register Screen"),
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              controller: emailController,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              controller: passwordController,
+              obscureText: true,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              controller: confirmPasswordController,
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                register(context);
+                // Implement Firebase login logic here
+              },
+              child: Text("Register"),
+            ),
+            Row(
+              children: [
+                Text("Have an account?"),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Login"),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void register(BuildContext context) async {
+    if (passwordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Password and Confirm Password do not match")));
+      return;
+    }
+    try {
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("User Registered: ${credential.user?.email}")));
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('The password provided is too weak.')));
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('The account already exists for that email.')));
       }
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message.toString())));
