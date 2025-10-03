@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../hive_example.dart';
+
 class ProductCubit extends Cubit<int> {
   ProductCubit() : super(0);
   Example example = Example();
@@ -75,17 +77,17 @@ class ProductCubit extends Cubit<int> {
     // log(role.toString());
     await Hive.openBox("boxname");
 
-    final box = Hive.box('myBox');
+    // final box = Hive.box('myBox');
 
-    box.put('name', 'David');
-    // box.put('num', Example(id: 1, name: 'Khaled', value: 1, num: 1.1));
-    box.put('list', ['A', 'B', 'C']);
-    String name = box.get('name', defaultValue: 'No Name');
-    double num = box.get('num', defaultValue: 0.0);
-    List<String> list = box.get('list', defaultValue: []);
-    log(name.toString());
-    log(num.toString());
-    log(list.toString());
+    // box.put('name', 'David');
+    // // box.put('num', Example(id: 1, name: 'Khaled', value: 1, num: 1.1));
+    // box.put('list', ['A', 'B', 'C']);
+    // String name = box.get('name', defaultValue: 'No Name');
+    // double num = box.get('num', defaultValue: 0.0);
+    // List<String> list = box.get('list', defaultValue: []);
+    // log(name.toString());
+    // log(num.toString());
+    // log(list.toString());
     // String? token;
     // List<String>? role;
     // log(token.toString());
@@ -99,11 +101,14 @@ class ProductCubit extends Cubit<int> {
     // storage.write(key: 'person', value: 'Khaled');
     // String? person = await storage.read(key: 'person');
     // log(person.toString());
-    // final box = await Hive.openBox('myBox');
-    // await box.put(
-    //     'name', Person(name: 'Khaled', age: 96, friends: ['A', 'B', 'C']));
-    // Person person = await box.get('name');
+    final box = await Hive.openBox('myBox');
+    await box.put(
+        'name', Person(name: 'Khaled', age: 96, friends: ['A', 'B', 'C']));
 
+    Person person = await box.get('name');
+    log(person.name);
+    log(person.age.toString());
+    log(person.friends.toString());
     // Database database = await openDatabase('my_dbre.db');
     //var result = await database.rawQuery('SELECT * FROM Test WHERE id = 1');
     // var result = await database.query('Test');

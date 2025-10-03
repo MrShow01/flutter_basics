@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+@pragma('vm:entry-point')
 Future<void> firebaseMessageBackgroundHandle(RemoteMessage message) async {
   log("BackGround Message :: ${message.from}");
 }
@@ -12,7 +14,7 @@ Future<void> firebaseMessageBackgroundHandle(RemoteMessage message) async {
 class NotificationService {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   initInfo() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
@@ -41,14 +43,19 @@ class NotificationService {
               iOS: iosInitializationSettings);
       await flutterLocalNotificationsPlugin.initialize(initializationSettings,
           onDidReceiveNotificationResponse: (payload) {
-        log(payload.toString());
         log("::::::::onDidReceiveNotificationResponse:::::::::::");
+        log(payload.payload.toString());
+        log(payload.notificationResponseType.toString());
+        log(payload.input.toString());
+        log(payload.id.toString());
+        log(payload.actionId.toString());
       });
       setupInteractedMessage();
     }
   }
 
   Future<void> setupInteractedMessage() async {
+    //  await FirebaseMessaging.instance.subscribeToTopic("your_topic_name");
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
@@ -60,6 +67,15 @@ class NotificationService {
       log("::::::::::::onMessage:::::::::::::::::");
       if (message.notification != null) {
         log(message.notification.toString());
+        log(message.notification!.title.toString());
+        log(message.notification!.body.toString());
+        log(message.notification!.apple.toString());
+        log(message.notification!.android.toString());
+        log(message.notification!.android.toString());
+        log(message.data.toString());
+        log(message.category.toString());
+        log(message.from.toString());
+        log(message.messageType.toString());
         display(message);
       }
     });
@@ -67,7 +83,16 @@ class NotificationService {
       log("::::::::::::onMessageOpenedApp:::::::::::::::::");
       if (message.notification != null) {
         log(message.notification.toString());
+        log(message.notification!.title.toString());
+        log(message.notification!.body.toString());
+        log(message.notification!.apple.toString());
+        log(message.notification!.android.toString());
+        log(message.notification!.android.toString());
         log(message.data.toString());
+        log(message.category.toString());
+        log(message.from.toString());
+        log(message.messageType.toString());
+        navigatorKey.currentState?.pushNamed('/page3');
         // display(message);
       }
     });
@@ -94,7 +119,7 @@ class NotificationService {
         '0',
         'customer',
         description: 'Show QuickLAI Notification',
-        importance: Importance.max,
+        importance: Importance.high,
       );
       AndroidNotificationDetails notificationDetails =
           AndroidNotificationDetails(channel.id, channel.name,
